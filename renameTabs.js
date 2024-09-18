@@ -1,7 +1,7 @@
 function renameTabs() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   const overviewSheet = spreadsheet.getSheetByName("Overview");
-  const classification = overviewSheet.getRange("D1").getValue();
+  const classification = overviewSheet.getRange("J1").getValue();
   const sheetNames = ["X1", "X2", "X3", "X4", "X5", "X6", "X7", "X12", "X34", "X56"];
 
   let prefix;
@@ -16,10 +16,10 @@ function renameTabs() {
       prefix = "C";
       break;
     case "Standard":
-      prefix = "Standard";
+      prefix = "S";
       break;
     default:
-      SpreadsheetApp.getUi().alert("Invalid classification in D1");
+      SpreadsheetApp.getUi().alert("Invalid classification in J1");
       return;
   }
 
