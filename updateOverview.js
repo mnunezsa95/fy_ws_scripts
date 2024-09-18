@@ -84,7 +84,7 @@ function updateOverview() {
       gradePrefix = "C";
       break;
     case "Standard":
-      gradePrefix = "Standard";
+      gradePrefix = "S";
       break;
     default:
       SpreadsheetApp.getUi().alert("Invalid classification in J1");
