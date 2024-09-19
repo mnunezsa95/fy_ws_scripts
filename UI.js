@@ -3,7 +3,8 @@ function onOpen() {
   ui.createMenu("Custom Actions")
     .addItem("Update Overview", "updateOverview")
     .addItem("Rename Tabs", "renameTabs")
+    .addItem("Find Frequencies & DsOW", "findFrequency")
     .addItem("Populate Instructional Days", "populateInstructionalDays")
-    .addItem("Find Frequencies & DOW", "findFrequency")
+    .addItem("Update README Tab", "updateReadmeTab")
     .addToUi();
 }

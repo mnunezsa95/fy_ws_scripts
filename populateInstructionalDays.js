@@ -3,9 +3,9 @@ function populateInstructionalDays() {
   const ui = SpreadsheetApp.getUi();
   const targetSpreadsheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const activeTargetColumn = targetSpreadsheet.getActiveCell().getColumn();
-  const activeColumnLetter = String.fromCharCode(64 + activeTargetColumn);
-  const frquencyValueArray = targetSpreadsheet.getRange(`${activeColumnLetter}4`).getValue().split("-");
-  const frequencyPart = frquencyValueArray[1];
+  const activeColumnLetter = getColumnLetter(activeTargetColumn);
+  const frequencyValueArray = targetSpreadsheet.getRange(`${activeColumnLetter}4`).getValue().split("-");
+  const frequencyPart = frequencyValueArray[1];
   const frequencyValues = frequencyPart.split(",").map((value) => value.trim());
 
   frequencyValues.forEach((freqValue) => {
@@ -30,9 +30,26 @@ function populateInstructionalDays() {
     }
   });
 
-  const urlResponse = ui.prompt("Enter", "Enter the spreadsheet URL:", ui.ButtonSet.OK_CANCEL);
-  const tabResponse = ui.prompt("Enter", "Enter the tab name:", ui.ButtonSet.OK_CANCEL);
-  const columnResponse = ui.prompt("Enter", "Enter the column letter:", ui.ButtonSet.OK_CANCEL);
+  const urlResponse = ui.prompt(
+    "Input Required",
+    "Enter the Academic Calendar URL:\n• Copy it directly from your browser's address bar.",
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (cancelPromptAlert(urlResponse)) return;
+
+  const tabResponse = ui.prompt(
+    "Input Required",
+    "Specify the name of the tab:\n• Make sure it matches the name in the Academic Calendar.",
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (cancelPromptAlert(tabResponse)) return;
+
+  const columnResponse = ui.prompt(
+    "Input Required",
+    "Specify the column letter:\n• Use a single uppercase letter that corresponds to the desired column.",
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (cancelPromptAlert(columnResponse)) return;
 
   if (urlResponse.getSelectedButton() == ui.Button.OK) {
     const url = urlResponse.getResponseText();
@@ -87,8 +104,14 @@ function populateInstructionalDays() {
         const resultRange = targetSpreadsheet.getRange(6, activeTargetColumn, processedResults.length, 1);
         const resultRangeTwo = targetSpreadsheet.getRange(6, activeTargetColumn + 2, processedResults.length, 1);
         const resultValues = processedResults.map((val) => [val]);
+
+        // Check if the header cell contains "NUMERACY" or "LITERACY"
+        const headerCellValue = targetSpreadsheet.getRange(`${activeColumnLetter}1`).getValue().toUpperCase();
+        if (headerCellValue.includes("NUMERACY") || headerCellValue.includes("LITERACY")) {
+          resultRangeTwo.setValues(resultValues);
+        }
+
         resultRange.setValues(resultValues);
-        resultRangeTwo.setValues(resultValues);
       }
     }
   }

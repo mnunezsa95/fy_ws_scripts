@@ -1,7 +1,27 @@
 function findFrequency() {
   const ui = SpreadsheetApp.getUi();
+  const programName = SpreadsheetApp.getActiveSpreadsheet()?.getSheetByName("Overview")?.getRange("D1").getValue();
   const userEmail = Session.getActiveUser().getEmail();
+  const [usernamePart, remainder] = userEmail.split("@");
+  const [firstName, lastName] = usernamePart.split(".");
+  const username =
+    firstName.charAt(0).toUpperCase() + firstName.slice(1) + " " + lastName.charAt(0).toUpperCase() + lastName.slice(1);
+
   const courses = ["Numeracy", "Literacy", "Language", "Science"];
+
+  const date = new Date();
+  const options = {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  };
+  const dateString = date.toLocaleDateString("en-US", options);
+
   let courseMap = {};
   let data = {};
   const dayAbbreviations = {
@@ -13,26 +33,20 @@ function findFrequency() {
   };
 
   const numberOfCyclesResponse = ui.prompt(
-    "Enter",
+    "Input Required",
     "Enter the grades to parse: \n • Separate each grade using a comma & space (i.e: G1, G2, G12):",
     ui.ButtonSet.OK_CANCEL
   );
 
-  if (numberOfCyclesResponse.getSelectedButton() == ui.Button.CANCEL) {
-    ui.alert("Action canceled.");
-    return;
-  }
+  if (cancelPromptAlert(numberOfCyclesResponse)) return;
 
   const numberOfCycles = numberOfCyclesResponse
     .getResponseText()
     .split(", ")
     .map((cycle) => cycle.trim());
-  const timetableURLResponse = ui.prompt("Enter", "Enter the timetable URL:", ui.ButtonSet.OK_CANCEL);
 
-  if (timetableURLResponse.getSelectedButton() == ui.Button.CANCEL) {
-    ui.alert("Action canceled.");
-    return;
-  }
+  const timetableURLResponse = ui.prompt("Input Required", "Enter the timetable URL:", ui.ButtonSet.OK_CANCEL);
+  if (cancelPromptAlert(timetableURLResponse)) return;
 
   const url = timetableURLResponse.getResponseText();
   const spreadsheetId = url.match(/[-\w]{25,}/);
@@ -46,15 +60,12 @@ function findFrequency() {
 
   courses.forEach((course) => {
     const subjectResponse = ui.prompt(
-      `Enter`,
-      `What is the subject name(s) for ${course}?:\n\nSeparate each subject name using a comma & space, i.e: \n• Mathematics 1, Mathematics 2\n• English Studies - Reading 1, English Studies - Reading 2\n• English Studies - Language\n• Science`,
+      `Input Required`,
+      `What is/are the subject name(s) for ${course}?:\n\nSeparate each subject name using a comma & space, i.e: \n• Mathematics 1, Mathematics 2\n• English Studies - Reading 1, English Studies - Reading 2\n• English Studies - Language\n• Science`,
       ui.ButtonSet.OK_CANCEL
     );
 
-    if (subjectResponse.getSelectedButton() == ui.Button.CANCEL) {
-      ui.alert("Action canceled.");
-      return;
-    }
+    if (cancelPromptAlert(subjectResponse)) return;
 
     const subjectNames = subjectResponse
       .getResponseText()
@@ -132,9 +143,11 @@ function findFrequency() {
 
   MailApp.sendEmail({
     to: userEmail,
-    subject: "Frequency Data Results",
-    body: `Here are the frequency data results:\n${resultString}`,
+    subject: `Frequency Data Results for ${programName}`,
+    body: `Script Executed by: ${username}\nScript Executed on: ${dateString}\n\nHere are the frequency data results for ${programName}: \n${resultString}`,
   });
+
+  ui.alert("Script Finished", "The script has finished running. The results will be emailed to you.", ui.ButtonSet.OK);
 
   return data;
 }
