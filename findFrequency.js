@@ -18,7 +18,7 @@ function findFrequency() {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    timeZoneName: "short",
   };
   const dateString = date.toLocaleDateString("en-US", options);
 

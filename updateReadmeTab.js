@@ -10,6 +10,7 @@ function updateReadmeTab() {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
+    timeZoneName: "short",
   };
   const dateString = date.toLocaleDateString("en-US", options);
   console.log(dateString);
