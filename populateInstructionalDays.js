@@ -105,8 +105,16 @@ function populateInstructionalDays() {
         const resultRangeTwo = targetSpreadsheet.getRange(6, activeTargetColumn + 2, processedResults.length, 1);
         const resultValues = processedResults.map((val) => [val]);
 
-        // Check if the header cell contains "NUMERACY" or "LITERACY"
-        const headerCellValue = targetSpreadsheet.getRange(`${activeColumnLetter}1`).getValue().toUpperCase();
+        const headerRange = targetSpreadsheet.getRange(`${activeColumnLetter}1`);
+        let headerCellValue;
+
+        if (headerRange.isPartOfMerge()) {
+          const mergedRange = headerRange.getMergedRanges()[0];
+          headerCellValue = mergedRange.getCell(1, 1).getValue().toUpperCase();
+        } else {
+          headerCellValue = headerRange.getValue().toUpperCase();
+        }
+
         if (headerCellValue.includes("NUMERACY") || headerCellValue.includes("LITERACY")) {
           resultRangeTwo.setValues(resultValues);
         }
